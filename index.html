@@ -763,7 +763,7 @@ let playerMesh,player;
 let enemies=[],gems=[],hpOrbs_arr=[],platformList=[],orbiters=[];
 let projectiles=[],enemyProjectiles=[];
 let portalMesh=null,portalActive=false;
-let atkTimer=0,waveTimer=0,waveEnemyCap=6;
+let atkTimer=0,waveTimer=0,waveEnemyCap=10;
 let gameActive=false,rafId=null,bossAlive=false,doomTimer=0,pendingLvlUp=false;
 let playerFollowLight;
 const keys={};
@@ -1584,7 +1584,7 @@ function updateHUD(){
   document.getElementById('doom-vig').style.background=
     `radial-gradient(ellipse at center,transparent ${Math.max(10,50-dp*.4)}%,rgba(150,0,0,${dp/100*.7}) 100%)`;
 }
-function xpNeeded(lvl){return 80+lvl*55;}
+function xpNeeded(lvl){return 40+lvl*28;}
 function gainXP(amt){
   const r=gs.run; r.xp+=amt;
   while(r.xp>=xpNeeded(r.level)){r.xp-=xpNeeded(r.level);r.level++;showLvlUp();}
@@ -1867,14 +1867,14 @@ function gameLoop(){
 
   // ── Wave / spawn ──
   waveTimer+=dt;
-  const spawnInterval=Math.max(.4,3.5-r.wave*.18);
+  const spawnInterval=Math.max(.25,2.5-r.wave*.15);
   const alive=enemies.filter(e=>!e.dead).length;
   if(waveTimer>spawnInterval&&alive<waveEnemyCap){
     waveTimer=0;spawnEnemy(r.wave,rooms[1+Math.floor(Math.random()*(rooms.length-1))]);
   }
   const waveThresh=15+r.wave*8;
   if(r.kills>=waveThresh&&r.kills/waveThresh>r.wave-1){
-    r.wave++;waveEnemyCap=6+r.wave*2;
+    r.wave++;waveEnemyCap=10+r.wave*3;
     if(r.wave%3===0&&!bossAlive)spawnBoss(r.wave);
   }
 
@@ -2020,7 +2020,7 @@ function startGame(){
   document.getElementById('game').classList.add('active');
   enemies=[]; gems=[]; hpOrbs_arr=[]; platformList=[]; orbiters=[];
   projectiles=[]; enemyProjectiles=[]; portalMesh=null; portalActive=false;
-  bossAlive=false; waveTimer=0; waveEnemyCap=6; atkTimer=0; doomTimer=0; pendingLvlUp=false;
+  bossAlive=false; waveTimer=0; waveEnemyCap=10; atkTimer=0; doomTimer=0; pendingLvlUp=false;
   document.getElementById('end-screen').classList.remove('on');
   document.getElementById('lvl-up').classList.remove('on');
   document.getElementById('reward-screen').classList.remove('on');
@@ -2034,7 +2034,7 @@ function startGame(){
   // Load all 4 GLB models in parallel, then start
   loadAllModels(()=>{
     spawnPlayer();
-    for(let i=0;i<6;i++)spawnEnemy(1,rooms[1+Math.floor(Math.random()*(rooms.length-1))]);
+    for(let i=0;i<10;i++)spawnEnemy(1,rooms[1+Math.floor(Math.random()*(rooms.length-1))]);
     updateAtkBadge();
     gameActive=true;
     if(rafId)cancelAnimationFrame(rafId);
